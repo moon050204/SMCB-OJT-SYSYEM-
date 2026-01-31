@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Student Dashboard - SMC OJT System</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo-section">
+        <div class="logo"><img src="IMAGES/SCHOOL LOGO NO BG.png" alt=""></div>
+        <div class="header-title">
+          <h1>Saint Mary's College of Baliuag</h1>
+          <p>Student Dashboard</p>
+        </div>
+      </div>
+      <div class="user-info">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <button class="btn btn-danger" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <!-- STUDENT DASHBOARD -->
+    <div id="studentDashboard" class="dashboard active">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="overview">Overview</button>
+        <button class="tab-btn" data-tab="timeTracking">Time Tracking</button>
+        <button class="tab-btn" data-tab="documents">Documents</button>
+        <button class="tab-btn" data-tab="history">History</button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div class="tab-content active" id="overview">
+        <div class="alert alert-info" id="courseInfo" style="margin-bottom: 1rem;">
+          <span>📚</span>
+          <div><strong>Your Course:</strong> <span id="studentCourse">Loading...</span></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="totalHours">0</div>
+                <div class="stat-label">Total Hours</div>
+              </div>
+              <div class="stat-icon blue">⏱️</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="daysLogged">0</div>
+                <div class="stat-label">Days Logged</div>
+              </div>
+              <div class="stat-icon green">📅</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="docsUploaded">0</div>
+                <div class="stat-label">Documents</div>
+              </div>
+              <div class="stat-icon orange">📄</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="progressPercent">0%</div>
+                <div class="stat-label">Progress</div>
+              </div>
+              <div class="stat-icon purple">📊</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Recent Activity</h3>
+          </div>
+          <div id="activityFeed">
+            <p style="color: #6b7280; text-align: center; padding: 2rem;">Loading...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Tracking Tab -->
+      <div class="tab-content" id="timeTracking">
+        <div class="card">
+          <div class="time-tracker">
+            <div class="current-time" id="currentTime">00:00:00</div>
+            <div class="time-status out" id="timeStatus">Not Clocked In</div>
+            <div class="time-actions">
+              <button class="btn btn-secondary" id="timeInBtn">⏰ Time In</button>
+              <button class="btn btn-danger" id="timeOutBtn" disabled>🏁 Time Out</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Today's Log</h3>
+          </div>
+          <div id="todayLog">
+            <p style="color: #6b7280; text-align: center; padding: 2rem;">Loading...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents Tab -->
+      <div class="tab-content" id="documents">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Submit Documents</h3>
+          </div>
+          <div class="alert alert-info">
+            <span>ℹ️</span>
+            <div><strong>Note:</strong> Upload your documents to Google Drive and share the link here. Make sure the link is accessible to your coordinator.</div>
+          </div>
+          <form id="uploadForm">
+            <div class="form-group">
+              <label>Document Title *</label>
+              <input type="text" id="docTitle" required placeholder="e.g., Weekly Report #1">
+            </div>
+            <div class="form-group">
+              <label>Document Type *</label>
+              <select id="docType" required>
+                <option value="">-- Select Type --</option>
+                <option value="Weekly Report">Weekly Report</option>
+                <option value="Monthly Report">Monthly Report</option>
+                <option value="Narrative Report">Narrative Report</option>
+                <option value="Resume">Resume</option>
+                <option value="Certificate">Certificate</option>
+                <option value="Evaluation Form">Evaluation Form</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Description (Optional)</label>
+              <textarea id="docDescription" rows="3" placeholder="Brief description of the document"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Google Drive Link *</label>
+              <input 
+                type="url" 
+                id="docLink" 
+                required 
+                placeholder="https://drive.google.com/file/d/..."
+              />
+              <small style="color: #94a3b8; font-size: 0.85rem; display: block; margin-top: 0.25rem;">
+                Right-click your file in Drive → Share → Copy link
+              </small>
+            </div>
+            <button type="submit" class="btn btn-primary">📤 Submit Document</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">My Documents</h3>
+          </div>
+          <div id="documentsList">
+            <p style="color: #6b7280; text-align: center; padding: 2rem;">Loading...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Tab -->
+      <div class="tab-content" id="history">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Time Log History</h3>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time In</th>
+                  <th>Time Out</th>
+                  <th>Hours</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="historyTable">
+                <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END STUDENT DASHBOARD -->
+  </div>
+
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <script src="firebase.js"></script>
+  <script src="utils.js"></script>
+  <script src="auth.js"></script>
+  <script src="student.js"></script>
+
+  <!-- Page-level guard -->
+  <script>
+    (function(){
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        try {
+          const doc = await db.collection('users').doc(user.uid).get();
+          if (!doc.exists) {
+            await auth.signOut();
+            window.location.href = 'index.html';
+            return;
+          }
+
+          const role = doc.data().role;
+          const name = doc.data().name || 'User';
+          const course = doc.data().course || 'N/A';
+
+          if (role !== 'student') {
+            await auth.signOut();
+            window.location.href = 'index.html';
+            return;
+          }
+
+          const userDisplay = document.getElementById('userDisplay');
+          if (userDisplay) userDisplay.innerText = `${name} (student)`;
+
+          const courseDisplay = document.getElementById('studentCourse');
+          if (courseDisplay) courseDisplay.innerText = course;
+
+          const logoutBtn = document.getElementById('logoutBtn');
+          if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+              await auth.signOut();
+              window.location.href = 'index.html';
+            });
+          }
+
+          setupTabNavigation && typeof setupTabNavigation === 'function' && setupTabNavigation();
+
+          if (typeof initStudentUI === 'function') {
+            initStudentUI();
+          }
+        } catch (err) {
+          console.error('Auth guard error:', err);
+          await auth.signOut();
+          window.location.href = 'index.html';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

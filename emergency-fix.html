@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🚨 Emergency Course Fix Tool</title>
+  <style>
+    body {
+      background: #0f172a;
+      color: #f1f5f9;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .box {
+      background: rgba(30, 41, 59, 0.8);
+      border: 2px solid #ef4444;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1rem;
+      width: 100%;
+      margin: 0.5rem 0;
+    }
+    button:hover { background: #dc2626; }
+    .result {
+      background: rgba(37, 99, 235, 0.1);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .user-item {
+      background: rgba(239, 68, 68, 0.1);
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border-radius: 0.5rem;
+      border-left: 4px solid #ef4444;
+    }
+    .success { color: #22c55e; font-weight: bold; }
+    .error { color: #ef4444; font-weight: bold; }
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      color: #f1f5f9;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>🚨 EMERGENCY COURSE FIX TOOL</h1>
+    <p style="color: #ef4444; font-weight: bold;">This will check and fix course assignments for ALL users</p>
+  </div>
+
+  <div class="box">
+    <h2>Step 1: Check Current Database</h2>
+    <button onclick="checkDatabase()">🔍 Check What's in Firestore</button>
+    <div id="checkResult" class="result" style="display: none;"></div>
+  </div>
+
+  <div class="box">
+    <h2>Step 2: Quick Fix (Update Specific User)</h2>
+    <input type="email" id="fixEmail" placeholder="Enter user email (e.g., coordinator@example.com)" />
+    <select id="fixCourse">
+      <option value="">-- Select Course --</option>
+      <option value="BSIT">BS Information Technology</option>
+      <option value="BSN">BS Nursing</option>
+      <option value="BSBA">BS Business Administration</option>
+      <option value="BSED">BS Elementary Education and Secondary Education</option>
+      <option value="BSPSYCH">BS Hospitality Management</option>
+      <option value="BSCRIM">BS Tourism Management</option>
+      <option value="OTHER">Other</option>
+    </select>
+    <button onclick="quickFix()">⚡ Fix This User NOW</button>
+    <div id="fixResult" class="result" style="display: none;"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+
+  <script>
+    const db = firebase.firestore();
+
+    async function checkDatabase() {
+      const result = document.getElementById('checkResult');
+      result.style.display = 'block';
+      result.innerHTML = '⏳ Checking database...';
+
+      try {
+        const usersSnap = await db.collection('users').get();
+        let output = '📊 DATABASE STATUS:\n\n';
+        let problemUsers = [];
+
+        usersSnap.forEach(doc => {
+          const data = doc.data();
+          const hasCourse = data.course && data.course.trim() !== '';
+          
+          output += `👤 ${data.name} (${data.email})\n`;
+          output += `   Role: ${data.role}\n`;
+          output += `   Course: ${hasCourse ? data.course : '❌ MISSING'}\n`;
+          output += `   UID: ${doc.id}\n\n`;
+
+          if ((data.role === 'student' || data.role === 'coordinator') && !hasCourse) {
+            problemUsers.push({
+              id: doc.id,
+              name: data.name,
+              email: data.email,
+              role: data.role
+            });
+          }
+        });
+
+        if (problemUsers.length > 0) {
+          output += '\n🚨 USERS MISSING COURSES:\n\n';
+          problemUsers.forEach(u => {
+            output += `❌ ${u.name} (${u.email}) - ${u.role}\n`;
+          });
+        } else {
+          output += '\n✅ All users have courses assigned!';
+        }
+
+        result.innerHTML = output;
+        console.log('Database check:', output);
+
+      } catch (err) {
+        result.innerHTML = '❌ Error: ' + err.message;
+        console.error(err);
+      }
+    }
+
+    async function quickFix() {
+      const email = document.getElementById('fixEmail').value.trim();
+      const course = document.getElementById('fixCourse').value;
+      const result = document.getElementById('fixResult');
+
+      result.style.display = 'block';
+
+      if (!email) {
+        result.innerHTML = '❌ Please enter an email address';
+        return;
+      }
+
+      if (!course) {
+        result.innerHTML = '❌ Please select a course';
+        return;
+      }
+
+      result.innerHTML = '⏳ Fixing user...';
+
+      try {
+        // Find user by email
+        const usersSnap = await db.collection('users').where('email', '==', email).get();
+
+        if (usersSnap.empty) {
+          result.innerHTML = `❌ No user found with email: ${email}`;
+          return;
+        }
+
+        const userDoc = usersSnap.docs[0];
+        const userData = userDoc.data();
+
+        // Update course
+        await db.collection('users').doc(userDoc.id).update({
+          course: course
+        });
+
+        result.innerHTML = `
+✅ SUCCESS!
+
+User: ${userData.name}
+Email: ${email}
+Role: ${userData.role}
+Course: ${course}
+
+The user has been updated in Firestore.
+They can now login and the course filter will work!
+        `;
+
+        console.log('✅ Fixed user:', email, '→', course);
+
+      } catch (err) {
+        result.innerHTML = '❌ Error: ' + err.message;
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

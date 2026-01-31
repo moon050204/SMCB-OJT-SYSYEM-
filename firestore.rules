@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Basic helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /* USERS: /users/{userId}
+       - Any logged-in user can read user profiles
+       - Anyone logged in can create/update (OK for school/demo)
+       - No deletes from client
+    */
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if false;
+    }
+
+    /* TIME LOGS: /timeLogs/{userId}/logs/{logId}
+       - Everyone logged in can READ logs
+       - Only owner writes their own
+    */
+    match /timeLogs/{userId}/logs/{logId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isOwner(userId);
+    }
+
+    /* DOCUMENTS: /documents/{userId}/uploads/{docId}
+       - Everyone logged in can READ
+       - Only owner writes their own
+       (works for student, coordinator & admin views)
+    */
+    match /documents/{userId}/uploads/{docId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isOwner(userId);
+    }
+
+    /* Lock everything else */
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

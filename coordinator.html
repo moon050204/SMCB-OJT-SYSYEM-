@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coordinator Dashboard - SMC OJT System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo-section">
+        <div class="logo"><img src="IMAGES/SCHOOL LOGO NO BG.png" alt=""></div>
+        <div class="header-title">
+          <h1>Saint Mary's College of Baliuag</h1>
+          <p>Coordinator Dashboard</p>
+        </div>
+      </div>
+      <div class="user-info">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <button class="btn btn-danger" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <!-- COORDINATOR DASHBOARD -->
+    <div id="coordinatorDashboard" class="dashboard active">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="coord-overview">Overview</button>
+        <button class="tab-btn" data-tab="coord-students">Students</button>
+        <button class="tab-btn" data-tab="coord-submissions">Submissions</button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div class="tab-content active" id="coord-overview">
+        <div class="alert alert-info" id="courseInfo" style="margin-bottom: 1rem;">
+          <span>📚</span>
+          <div><strong>Your Course:</strong> <span id="coordinatorCourse">Loading...</span></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="coordTotalStudents">0</div>
+                <div class="stat-label">Total Students</div>
+              </div>
+              <div class="stat-icon blue">👥</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="coordActiveToday">0</div>
+                <div class="stat-label">Active Today</div>
+              </div>
+              <div class="stat-icon green">✅</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="coordPendingDocs">0</div>
+                <div class="stat-label">Total Documents</div>
+              </div>
+              <div class="stat-icon orange">📄</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="coordAvgHours">0</div>
+                <div class="stat-label">Avg Hours/Student</div>
+              </div>
+              <div class="stat-icon purple">📊</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Students Tab -->
+      <div class="tab-content" id="coord-students">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Student Monitoring</h3>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Total Hours</th>
+                  <th>Days Logged</th>
+                  <th>Documents</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody id="coordStudentTable">
+                <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submissions Tab -->
+      <div class="tab-content" id="coord-submissions">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Document Submissions</h3>
+          </div>
+          <div id="submissionsContainer">
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <script src="firebase.js"></script>
+  <script src="utils.js"></script>
+  <script src="auth.js"></script>
+  <script src="coordinator.js"></script>
+
+  <!-- Coordinator Logic -->
+  <script>
+    (function(){
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        const docSnap = await db.collection("users").doc(user.uid).get();
+        if (!docSnap.exists) {
+          await auth.signOut();
+          window.location.href = "index.html";
+          return;
+        }
+
+        const role = docSnap.data().role;
+        const name = docSnap.data().name || "Coordinator";
+        const course = docSnap.data().course; // GET THE COURSE!
+
+        console.log("🔍 DEBUG: Coordinator data from Firestore:", {
+          name: name,
+          role: role,
+          course: course
+        });
+
+        if (role !== "coordinator") {
+          await auth.signOut();
+          window.location.href = "index.html";
+          return;
+        }
+
+        // Check if course is missing
+        if (!course) {
+          alert("⚠️ Your account has no course assigned!\n\nPlease contact admin to assign your course in the 'Fix Courses' tab.");
+          document.getElementById("userDisplay").innerText = `${name} (${role}) - NO COURSE`;
+          const courseDisplay = document.getElementById("coordinatorCourse");
+          if (courseDisplay) courseDisplay.innerText = "NOT ASSIGNED";
+        } else {
+          document.getElementById("userDisplay").innerText = `${name} (${role})`;
+          const courseDisplay = document.getElementById("coordinatorCourse");
+          if (courseDisplay) courseDisplay.innerText = course;
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+          await auth.signOut();
+          window.location.href = "index.html";
+        });
+
+        setupTabNavigation && setupTabNavigation();
+        
+        // CRITICAL: Store course in window BEFORE loading data
+        window.coordinatorCourse = course;
+        console.log("✅ DEBUG: Set window.coordinatorCourse to:", window.coordinatorCourse);
+        
+        // NOW load the data
+        loadCoordinatorOverview();
+        loadCoordinatorStudents();
+        loadCoordinatorSubmissions();
+      });
+    })();
+  </script>
+</body>
+</html>

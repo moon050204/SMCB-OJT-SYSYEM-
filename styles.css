@@ -1,0 +1,692 @@
+/* ==========================================
+   GLOBAL STYLES — Dark Theme
+========================================== */
+:root {
+  --primary-color: #2563eb; /* SMC Blue */
+  --bg-dark: #0f172a;
+  --bg-card: rgba(30, 41, 59, 0.7); /* glassy card */
+  --text-light: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.4);
+  --radius: 1rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+body {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Logo wrapper */
+.logo {
+  width: 90px;          /* change this number to make it bigger/smaller */
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: transparent;   /* removes solid blue circle */
+  box-shadow: none;          /* removes blue glow */
+}
+
+/* The image inside the logo */
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.header-title h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.header-title p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.user-badge {
+  font-weight: 600;
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+}
+
+/* ==========================================
+   AUTH PAGE (Login/Register)
+========================================== */
+.auth-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2rem;
+  min-height: calc(100vh - 120px);
+}
+
+.auth-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  backdrop-filter: blur(12px);
+  animation: fadeIn 0.3s ease;
+}
+
+.auth-form.hidden {
+  display: none;
+}
+
+.auth-form h2 {
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-light);
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.switch-form {
+  text-align: center;
+  margin-top: 1rem;
+  color: var(--text-muted);
+}
+
+.switch-form a {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.switch-form a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+/* ==========================================
+   DASHBOARD STRUCTURE
+========================================== */
+.dashboard {
+  padding: 2rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid var(--border-color);
+  color: var(--text-light);
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tab-btn.active,
+.tab-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ==========================================
+   CARDS
+========================================== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(12px);
+  padding: 1.5rem;
+  max-width: 100%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+/* ==========================================
+   STATS GRID
+========================================== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* ==========================================
+   TABLES
+========================================== */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-light);
+}
+
+thead {
+  background: rgba(37, 99, 235, 0.2);
+}
+
+th, td {
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+th {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================
+   ALERTS & BADGES
+========================================== */
+.alert {
+  display: flex;
+  align-items: start;
+  gap: 1rem;
+  border-left: 4px solid var(--primary-color);
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--text-light);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.alert-info { border-left-color: var(--primary-color); }
+.alert-success { border-left-color: #22c55e; }
+.alert-danger { border-left-color: #ef4444; }
+
+/* ==========================================
+   TIME TRACKER
+========================================== */
+.time-tracker {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.current-time {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.time-status {
+  margin: 1rem 0;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.time-status.in { color: #22c55e; }
+.time-status.out { color: #ef4444; }
+
+/* ==========================================
+   COORDINATOR STUDENT DETAILS MODAL
+========================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+}
+
+.modal {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(37, 99, 235, 0.15);
+  color: #f8fafc;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(25px);
+  position: relative;
+  padding: 0;
+}
+
+/* Top glowing header bar */
+.modal::before {
+  content: "";
+  display: block;
+  height: 6px;
+  border-radius: 1rem 1rem 0 0;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb, #3b82f6);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+.modal-content {
+  padding: 2rem;
+}
+
+.modal h3 {
+  color: #60a5fa;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.close-btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #f87171, #b91c1c);
+}
+
+/* ==========================================
+   DOCUMENTS & SUBMISSIONS
+========================================== */
+#documentsList,
+#submissionsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+  color: #e5e7eb;
+}
+/* === FIX: Dropdown (select) color visibility === */
+select {
+  background-color: rgba(30, 41, 59, 0.9); /* dark navy background */
+  color: #f1f5f9; /* light text */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+}
+
+select option {
+  background-color: #1e293b; /* dropdown option background */
+  color: #f1f5f9; /* option text */
+}
+
+
+.document-item,
+.submission-card {
+  background: rgba(37, 99, 235, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.3s ease;
+}
+
+.document-item:hover,
+.submission-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* ==========================================
+   DELETE BUTTON
+========================================== */
+.delete-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fee2e2;
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: scale(1.05);
+}
+
+/* ==========================================
+   ANIMATIONS
+========================================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN (FINAL OPTIMIZED)
+========================================== */
+
+/* Tablet view (≤1024px) */
+@media (max-width: 1024px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .header-title h1 { font-size: 1.1rem; }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .auth-form {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  #documentsList,
+  #submissionsContainer {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .document-item,
+  .submission-card {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* Mobile view (≤768px) */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .logo {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+  }
+
+  .header-title h1 { font-size: 1rem; }
+  .header-title p { font-size: 0.85rem; }
+
+  .user-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .stats-grid { grid-template-columns: 1fr; gap: 1rem; }
+
+  #documentsList,
+  #submissionsContainer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .document-item,
+  .submission-card {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .card { padding: 1rem; }
+  .auth-form { padding: 1.25rem; }
+  .current-time { font-size: 1.4rem; }
+
+  .modal { width: 95%; padding: 0; }
+  .modal-content { padding: 1.25rem; }
+}
+
+/* Extra small screens (≤480px) */
+@media (max-width: 480px) {
+  .header { padding: 0.75rem 1rem; }
+  .header-title h1 { font-size: 0.9rem; }
+
+  .auth-form {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .card { padding: 0.9rem; }
+
+  #documentsList,
+  #submissionsContainer {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .document-item,
+  .submission-card { padding: 0.9rem; }
+
+  .modal-content { padding: 1rem; }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+/* ==========================================
+   OVERVIEW / STATS CARD DESIGN (FIXED)
+========================================== */
+.stat-card {
+  background: rgba(37, 99, 235, 0.08); /* soft blue tint */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  background: rgba(37, 99, 235, 0.15);
+  border-radius: 0.75rem;
+  padding: 0.6rem;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.25);
+}
+
+/* Colored icon variations */
+.stat-icon.blue { color: #3b82f6; }
+.stat-icon.green { color: #22c55e; }
+.stat-icon.orange { color: #f59e0b; }
+.stat-icon.purple { color: #a855f7; }
+
+/* Responsive grid adjustment for overview */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

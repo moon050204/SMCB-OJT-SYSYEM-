@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - SMC OJT System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo-section">
+        <div class="logo"><img src="IMAGES/SCHOOL LOGO NO BG.png" alt=""></div>
+        <div class="header-title">
+          <h1>Saint Mary's College of Baliuag</h1>
+          <p>Admin Dashboard</p>
+        </div>
+      </div>
+      <div class="user-info">
+        <div class="user-badge" id="userDisplay">Loading...</div>
+        <button class="btn btn-danger" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="dashboard active">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="admin-overview">Overview</button>
+        <button class="tab-btn" data-tab="admin-create-user">➕ Create User</button>
+        <button class="tab-btn" data-tab="admin-users">Users</button>
+        <button class="tab-btn" data-tab="admin-courses">Fix Courses</button>
+        <button class="tab-btn" data-tab="admin-emergency">🚨 Emergency</button>
+        <button class="tab-btn" data-tab="admin-reports">Reports</button>
+      </div>
+
+      <!-- Overview -->
+      <div class="tab-content active" id="admin-overview">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="adminTotalUsers">0</div>
+                <div class="stat-label">Total Users</div>
+              </div>
+              <div class="stat-icon blue">👥</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="adminStudents">0</div>
+                <div class="stat-label">Students</div>
+              </div>
+              <div class="stat-icon green">🎓</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="adminCoordinators">0</div>
+                <div class="stat-label">Coordinators</div>
+              </div>
+              <div class="stat-icon orange">👔</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div>
+                <div class="stat-value" id="adminTotalDocs">0</div>
+                <div class="stat-label">Total Documents</div>
+              </div>
+              <div class="stat-icon purple">📁</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <span>ℹ️</span>
+          <div><strong>System Status:</strong> All systems operational.</div>
+        </div>
+      </div>
+
+      <!-- Create User Tab (NEW) -->
+      <div class="tab-content" id="admin-create-user">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">➕ Create New User Account</h3>
+          </div>
+          <div class="alert alert-info">
+            <span>ℹ️</span>
+            <div><strong>Admin Only:</strong> Create student or coordinator accounts with courses pre-assigned.</div>
+          </div>
+
+          <form id="adminCreateUserForm">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="createName" required placeholder="e.g., John Doe" />
+            </div>
+
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input type="email" id="createEmail" required placeholder="e.g., john@example.com" />
+            </div>
+
+            <div class="form-group">
+              <label>Password *</label>
+              <input type="password" id="createPassword" required placeholder="Minimum 6 characters" />
+            </div>
+
+            <div class="form-group">
+              <label>Role *</label>
+              <select id="createRole" required>
+                <option value="">-- Select Role --</option>
+                <option value="student">Student</option>
+                <option value="coordinator">Coordinator</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="createCourseGroup" style="display: none;">
+              <label>Course/Program *</label>
+              <select id="createCourse">
+                <option value="">-- Select Course --</option>
+                <option value="BSIT">BS Information Technology</option>
+                <option value="BSN">BS Nursing</option>
+                <option value="BSBA">BS Business Administration</option>
+                <option value="BSED">BS Elementary Education and Secondary Education</option>
+                <option value="BSPSYCH">BS Hospitality Management</option>
+                <option value="BSCRIM">BS Tourism Management</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              ➕ Create User Account
+            </button>
+          </form>
+
+          <div id="createUserResult" style="margin-top: 1rem;"></div>
+        </div>
+      </div>
+
+      <!-- Users -->
+      <div class="tab-content" id="admin-users">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">User Management</h3>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Course</th>
+                  <th>Joined</th>
+                </tr>
+              </thead>
+              <tbody id="adminUserTable">
+                <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fix Courses Tab -->
+      <div class="tab-content" id="admin-courses">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🔧 Assign Courses to Users</h3>
+          </div>
+          <div class="alert alert-danger">
+            <span>⚠️</span>
+            <div><strong>Important:</strong> Use this tool to assign courses to students and coordinators. This ensures coordinators only see students from their course.</div>
+          </div>
+          
+          <div id="courseAssignmentList">
+            <p style="text-align: center; padding: 2rem; color: #94a3b8;">Loading users...</p>
+          </div>
+
+          <button id="saveCoursesBtn" class="btn btn-primary" style="width: 100%; margin-top: 1rem; display: none;">
+            💾 Save All Course Assignments
+          </button>
+
+          <div id="courseResult" style="margin-top: 1rem;"></div>
+        </div>
+      </div>
+
+      <!-- Emergency Fix Tab (NEW) -->
+      <div class="tab-content" id="admin-emergency">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🚨 Emergency Course Fix Tool</h3>
+          </div>
+          <div class="alert alert-danger">
+            <span>⚠️</span>
+            <div><strong>Quick Fix:</strong> Check database and fix individual users instantly.</div>
+          </div>
+
+          <div style="margin-bottom: 2rem;">
+            <h4 style="margin-bottom: 1rem;">Step 1: Check Current Database</h4>
+            <button id="checkDbBtn" class="btn btn-primary" style="width: 100%;">
+              🔍 Check What's in Firestore
+            </button>
+            <div id="emergencyCheckResult" style="display: none; background: rgba(37,99,235,0.1); padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow-y: auto;"></div>
+          </div>
+
+          <div>
+            <h4 style="margin-bottom: 1rem;">Step 2: Quick Fix Specific User</h4>
+            <div class="form-group">
+              <label>User Email *</label>
+              <input type="email" id="emergencyEmail" placeholder="Enter user email" />
+            </div>
+            <div class="form-group">
+              <label>Assign Course *</label>
+              <select id="emergencyCourse">
+                <option value="">-- Select Course --</option>
+                <option value="BSIT">BS Information Technology</option>
+                <option value="BSN">BS Nursing</option>
+                <option value="BSBA">BS Business Administration</option>
+                <option value="BSED">BS Elementary Education and Secondary Education</option>
+                <option value="BSPSYCH">BS Hospitality Management</option>
+                <option value="BSCRIM">BS Tourism Management</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+            <button id="emergencyFixBtn" class="btn btn-danger" style="width: 100%;">
+              ⚡ Fix This User NOW
+            </button>
+            <div id="emergencyFixResult" style="display: none; background: rgba(34,197,94,0.1); padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; white-space: pre-wrap;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports -->
+      <div class="tab-content" id="admin-reports">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">System Reports</h3>
+          </div>
+          <div id="adminReports">
+            <p style="color: #6b7280; text-align: center; padding: 2rem;">
+              Reports and analytics coming soon...
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END ADMIN DASHBOARD -->
+  </div>
+
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <script src="firebase.js"></script>
+  <script src="utils.js"></script>
+  <script src="auth.js"></script>
+  <script src="admin.js"></script>
+
+  <!-- Admin page guard -->
+  <script>
+    (function(){
+      // DEBUG: confirm which Firebase project the page is using and token claims
+      try {
+        console.log('Firebase app config:', firebase.app().options);
+      } catch(e) {
+        console.warn('Firebase not initialized yet:', e);
+      }
+
+      // Helper: prints current user's token claims (call after sign-in)
+      async function logTokenClaims(user) {
+        if (!user) return console.log('No signed-in user to inspect claims.');
+        try {
+          const idTokenResult = await user.getIdTokenResult();
+          console.log('ID token claims:', idTokenResult.claims);
+        } catch (err) {
+          console.error('Error getting token claims:', err);
+        }
+      }
+
+      // Reuse global instances if already created by other files to avoid "Identifier already been declared"
+      const auth = (window.appAuth = window.appAuth || firebase.auth());
+      const db = (window.appDB = window.appDB || firebase.firestore());
+      let courseUsers = [];
+
+      // Helper: show actionable message for permission errors
+      function handleFirestoreError(err, where) {
+        // log context
+        console.error(where + ' - Firestore error:', err);
+        try { console.log('Firebase config:', firebase.app().options); } catch(e){/*ignore*/ }
+        try { console.log('Current uid:', auth.currentUser && auth.currentUser.uid); } catch(e){/*ignore*/ }
+        const isPerm = err && (err.code === 'permission-denied' || /Missing or insufficient permissions/i.test(err.message || ''));
+        const msgRoot = isPerm
+          ? 'Missing or insufficient Firestore permissions. This page requires admin privileges to list/write other users or read collectionGroup uploads.'
+          : 'Firestore error: ' + (err.message || err);
+
+        // Prefer showAlert if available; otherwise fallback to alert and inline UI hints.
+        const extra = isPerm
+          ? '\n\nAction: (1) verify you are using the same Firebase project shown above, (2) set custom claims (admin/role) via the Admin SDK OR relax rules for testing, then refresh token.'
+          : '';
+        if (typeof showAlert === 'function') {
+          showAlert(msgRoot + extra, 'danger');
+        } else {
+          alert(msgRoot + extra);
+        }
+
+        // Optionally show a visible message in the page for admin context
+        const courseResult = document.getElementById('courseResult');
+        if (courseResult && isPerm) {
+          courseResult.innerHTML = '<p style="color:#ef4444;">' + msgRoot + ' — grant admin claims or update rules. See console for details.</p>';
+        }
+      }
+
+      // small helper available from console: window.debugFirestore()
+      window.debugFirestore = async function() {
+        console.log('firebase options:', firebase.app().options);
+        const user = auth.currentUser;
+        console.log('current user:', user && user.uid);
+        if (user) {
+          try {
+            const t = await user.getIdTokenResult();
+            console.log('token claims:', t.claims);
+          } catch(e){ console.error('token claim read failed:', e); }
+        }
+      };
+
+      auth.onAuthStateChanged && auth.onAuthStateChanged(async (user) => {
+        // when auth fires, print token claims (helps verify admin claim)
+        logTokenClaims(user);
+        if (!user) {
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        // Prefer token claims (set via Admin SDK). If missing, fall back to reading users/{uid} with guarded try/catch.
+        let role;
+        let name = 'Admin';
+        try {
+          // use the user object provided by the listener to avoid race with auth.currentUser
+          const idTokenResult = await user.getIdTokenResult();
+          const claims = idTokenResult.claims || {};
+          // Expect either claims.role (string) or a boolean flag claims.admin
+          if (claims.role) role = claims.role;
+          else if (claims.admin) role = 'admin';
+
+          // If name is available in token claims, use it
+          if (claims.name) name = claims.name;
+        } catch (err) {
+          console.warn('Token read error (non-fatal):', err);
+        }
+
+        // If no role from token claims, try to read user's profile doc (may fail if rules block it)
+        if (!role) {
+          try {
+            const doc = await db.collection('users').doc(user.uid).get();
+            if (!doc.exists) {
+              await auth.signOut();
+              window.location.href = 'index.html';
+              return;
+            }
+            const data = doc.data();
+            role = data.role;
+            name = data.name || name;
+          } catch (err) {
+            // Likely permission error from Firestore rules reading users/{uid}
+            console.error('Firestore read error while determining role:', err);
+            // Show guidance and sign out to avoid partial access
+            alert('Insufficient Firestore permissions to read your user profile. Update your security rules to allow users to read their own profile or set role claims. See console for details.');
+            await auth.signOut();
+            window.location.href = 'index.html';
+            return;
+          }
+        }
+
+        if (role !== 'admin') {
+          await auth.signOut();
+          window.location.href = 'index.html';
+          return;
+        }
+
+        document.getElementById('userDisplay').innerText = `${name} (${role})`;
+
+        // quick permission probe: try a small admin read (limit 1) to ensure collection-level access
+        try {
+          await db.collection('users').limit(1).get();
+        } catch (err) {
+          handleFirestoreError(err, 'Permission probe (users collection)');
+          // do not continue to call admin-only setup functions if we cannot list users
+          return;
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = 'index.html';
+          });
+        }
+
+        typeof setupTabNavigation === 'function' && setupTabNavigation();
+        typeof loadAdminOverview === 'function' ? loadAdminOverview() : null;
+        typeof loadAdminUsers === 'function' ? loadAdminUsers() : null;
+        typeof setupCourseAssignment === 'function' ? setupCourseAssignment() : null;
+        typeof setupCreateUser === 'function' ? setupCreateUser() : null;
+        typeof setupEmergencyFix === 'function' ? setupEmergencyFix() : null;
+      });
+
+      async function loadAdminOverview() {
+        try {
+          const usersSnap = await db.collection('users').get();
+          const totalUsers = usersSnap.size;
+          const students = usersSnap.docs.filter(u => u.data().role === 'student').length;
+          const coordinators = usersSnap.docs.filter(u => u.data().role === 'coordinator').length;
+
+          const docsSnap = await db.collectionGroup('uploads').get();
+          const totalDocs = docsSnap.size;
+
+          document.getElementById('adminTotalUsers').innerText = totalUsers;
+          document.getElementById('adminStudents').innerText = students;
+          document.getElementById('adminCoordinators').innerText = coordinators;
+          document.getElementById('adminTotalDocs').innerText = totalDocs;
+        } catch (err) {
+          handleFirestoreError(err, 'loadAdminOverview');
+        }
+      }
+
+      async function loadAdminUsers() {
+        try {
+          const table = document.getElementById('adminUserTable');
+          const usersSnap = await db.collection('users').orderBy('createdAt', 'desc').get();
+
+          if (usersSnap.empty) {
+            table.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No users found.</td></tr>";
+            return;
+          }
+
+          table.innerHTML = '';
+          usersSnap.forEach(doc => {
+            const data = doc.data();
+            const joined = data.createdAt?.seconds ? 
+              new Date(data.createdAt.seconds * 1000).toLocaleDateString() : '—';
+            const course = data.course || '—';
+            const row = `
+              <tr>
+                <td>${data.name}</td>
+                <td>${data.email}</td>
+                <td>${data.role}</td>
+                <td>${course}</td>
+                <td>${joined}</td>
+              </tr>
+            `;
+            table.insertAdjacentHTML('beforeend', row);
+          });
+        } catch (err) {
+          handleFirestoreError(err, 'loadAdminUsers');
+        }
+      }
+
+       // NEW: Create User Function
+       function setupCreateUser() {
+         const form = document.getElementById('adminCreateUserForm');
+         if (!form) return;
+ 
+         const roleSelect = document.getElementById('createRole');
+         const courseGroup = document.getElementById('createCourseGroup');
+         const courseSelect = document.getElementById('createCourse');
+ 
+         roleSelect.addEventListener('change', () => {
+           const role = roleSelect.value;
+           if (role === 'student' || role === 'coordinator') {
+             courseGroup.style.display = 'block';
+             courseSelect.required = true;
+           } else {
+             courseGroup.style.display = 'none';
+             courseSelect.required = false;
+             courseSelect.value = '';
+           }
+         });
+ 
+         form.addEventListener('submit', async (e) => {
+           e.preventDefault();
+           
+           const name = document.getElementById('createName').value.trim();
+           const email = document.getElementById('createEmail').value.trim();
+           const password = document.getElementById('createPassword').value;
+           const role = document.getElementById('createRole').value;
+           const course = document.getElementById('createCourse').value;
+           const result = document.getElementById('createUserResult');
+           const submitBtn = form.querySelector('button[type="submit"]');
+ 
+           if (!name || !email || !password || !role) {
+             showAlert('Please fill in all required fields.', 'danger');
+             return;
+           }
+ 
+           if ((role === 'student' || role === 'coordinator') && !course) {
+             showAlert('Please select a course.', 'danger');
+             return;
+           }
+ 
+           if (password.length < 6) {
+             showAlert('Password must be at least 6 characters.', 'danger');
+             return;
+           }
+ 
+           submitBtn.disabled = true;
+           submitBtn.innerText = 'Creating...';
+           result.innerHTML = '';
+ 
+           try {
+             const methods = await auth.fetchSignInMethodsForEmail(email);
+             if (methods.length > 0) {
+               showAlert('This email is already registered!', 'danger');
+               submitBtn.disabled = false;
+               submitBtn.innerText = '➕ Create User Account';
+               return;
+             }
+ 
+            // Creating auth users from client signs you in as the new user.
+            // Writing their profile document requires admin-level Firestore permissions.
+            // We'll attempt creation, but if the Firestore write fails due to permissions,
+            // we will clean up the created auth user and instruct the admin to use the Admin SDK.
+            const cred = await auth.createUserWithEmailAndPassword(email, password);
+            const newUser = firebase.auth().currentUser;
+ 
+            const userData = {
+              name,
+              email,
+              role,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+ 
+            if (role === 'student' || role === 'coordinator') {
+              userData.course = course;
+            }
+ 
+            try {
+              await db.collection('users').doc(cred.user.uid).set(userData);
+            } catch (err) {
+              // Firestore write failed: attempt to delete the newly created auth account to avoid orphan accounts
+              handleFirestoreError(err, 'createUser -> firestore write');
+              try {
+                if (newUser && newUser.delete) {
+                  await newUser.delete();
+                }
+              } catch (cleanupErr) {
+                console.error('Failed to delete newly created auth user after Firestore write failure:', cleanupErr);
+              }
+              submitBtn.disabled = false;
+              submitBtn.innerText = '➕ Create User Account';
+              return;
+            }
+ 
+             result.innerHTML = `
+               <div class="alert alert-info" style="background: rgba(34,197,94,0.1); border-left-color: #22c55e;">
+                 <span>✅</span>
+                 <div>
+                   <strong>Success!</strong> User created.<br>
+                   Name: ${name}<br>
+                   Email: ${email}<br>
+                   Password: ${password}
+                 </div>
+               </div>
+             `;
+ 
+             showAlert(`✅ User ${name} created!`, 'success');
+             form.reset();
+             courseGroup.style.display = 'none';
+             
+             await loadAdminOverview();
+             await loadAdminUsers();
+ 
+           } catch (err) {
+             console.error('Create user error:', err);
+             handleFirestoreError(err, 'createUser');
+           } finally {
+             submitBtn.disabled = false;
+             submitBtn.innerText = '➕ Create User Account';
+           }
+         });
+       }
+ 
+      // NEW: Emergency Fix Function
+      function setupEmergencyFix() {
+        document.getElementById('checkDbBtn').addEventListener('click', async () => {
+          const result = document.getElementById('emergencyCheckResult');
+          result.style.display = 'block';
+          result.innerHTML = '⏳ Checking...';
+
+          try {
+            const usersSnap = await db.collection('users').get();
+            let output = '📊 DATABASE:\n\n';
+
+            usersSnap.forEach(doc => {
+              const data = doc.data();
+              const course = data.course || 'MISSING';
+              output += `👤 ${data.name}\n   Email: ${data.email}\n   Role: ${data.role}\n   Course: ${course}\n\n`;
+            });
+
+            result.innerHTML = output;
+          } catch (err) {
+            result.innerHTML = '❌ Error: ' + err.message;
+          }
+        });
+
+        document.getElementById('emergencyFixBtn').addEventListener('click', async () => {
+          const email = document.getElementById('emergencyEmail').value.trim();
+          const course = document.getElementById('emergencyCourse').value;
+          const result = document.getElementById('emergencyFixResult');
+
+          result.style.display = 'block';
+
+          if (!email || !course) {
+            result.innerHTML = '❌ Fill all fields';
+            return;
+          }
+
+          result.innerHTML = '⏳ Fixing...';
+
+          try {
+            const usersSnap = await db.collection('users').where('email', '==', email).get();
+
+            if (usersSnap.empty) {
+              result.innerHTML = `❌ No user found: ${email}`;
+              return;
+            }
+
+            const userDoc = usersSnap.docs[0];
+            const userData = userDoc.data();
+
+            await db.collection('users').doc(userDoc.id).update({ course });
+
+            result.innerHTML = `✅ FIXED!\nUser: ${userData.name}\nCourse: ${course}`;
+            showAlert(`✅ Fixed!`, 'success');
+            await loadAdminUsers();
+
+          } catch (err) {
+            result.innerHTML = '❌ Error: ' + err.message;
+          }
+        });
+      }
+
+      // Course assignment (existing)
+      async function setupCourseAssignment() {
+        const container = document.getElementById('courseAssignmentList');
+        const saveBtn = document.getElementById('saveCoursesBtn');
+        
+        try {
+          const usersSnap = await db.collection('users').get();
+          courseUsers = [];
+
+          usersSnap.forEach(doc => {
+            const data = doc.data();
+            if (data.role === 'student' || data.role === 'coordinator') {
+              courseUsers.push({ id: doc.id, ...data });
+            }
+          });
+
+          if (courseUsers.length === 0) {
+            container.innerHTML = '<p style="text-align:center;color:#94a3b8;">No students or coordinators found.</p>';
+            return;
+          }
+
+          container.innerHTML = '';
+          
+          courseUsers.forEach((user, index) => {
+            const existingCourse = user.course || '';
+            const roleColor = user.role === 'student' ? '#22c55e' : '#f59e0b';
+            const hasCourse = existingCourse ? 'color: #3b82f6;' : 'color: #ef4444; font-weight: bold;';
+            
+            const div = document.createElement('div');
+            div.style.cssText = 'background: rgba(37,99,235,0.08); padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;';
+            div.innerHTML = `
+              <div style="flex: 1;">
+                <strong style="color: #f1f5f9;">${user.name}</strong>
+                <div style="font-size: 0.9rem; color: #94a3b8;">${user.email}</div>
+                <div style="font-size: 0.85rem; color: ${roleColor}; margin-top: 0.25rem;">
+                  ${user.role.toUpperCase()}
+                  <span style="${hasCourse}"> • ${existingCourse || 'NO COURSE ASSIGNED'}</span>
+                </div>
+              </div>
+              <select id="courseSelect_${index}" style="padding: 0.6rem; border-radius: 0.5rem; background: rgba(30,41,59,0.9); color: #f1f5f9; border: 1px solid rgba(255,255,255,0.1); min-width: 250px;">
+                <option value="">-- Select Course --</option>
+                <option value="BSIT" ${existingCourse === 'BSIT' ? 'selected' : ''}>BS Information Technology</option>
+                <option value="BSN" ${existingCourse === 'BSN' ? 'selected' : ''}>BS Nursing</option>
+                <option value="BSBA" ${existingCourse === 'BSBA' ? 'selected' : ''}>BS Business Administration</option>
+                <option value="BSED" ${existingCourse === 'BSED' ? 'selected' : ''}>BS Elementary Education and Secondary Education</option>
+                <option value="BSPSYCH" ${existingCourse === 'BSPSYCH' ? 'selected' : ''}>BS Hospitality Management</option>
+                <option value="BSCRIM" ${existingCourse === 'BSCRIM' ? 'selected' : ''}>BS Tourism Management</option>
+                <option value="OTHER" ${existingCourse === 'OTHER' ? 'selected' : ''}>Other</option>
+              </select>
+            `;
+            container.appendChild(div);
+          });
+
+          saveBtn.style.display = 'block';
+
+        } catch (err) {
+          console.error('Error loading users for course assignment:', err);
+          container.innerHTML = '<p style="color:#ef4444;text-align:center;">Error loading users.</p>';
+        }
+      }
+
+      // Save course assignments (existing)
+      const saveCoursesBtnEl = document.getElementById('saveCoursesBtn');
+      if (saveCoursesBtnEl) {
+        saveCoursesBtnEl.addEventListener('click', async () => {
+          const btn = saveCoursesBtnEl;
+          const result = document.getElementById('courseResult');
+          
+          btn.disabled = true;
+          btn.innerText = '⏳ Saving...';
+          result && (result.innerHTML = '');
+
+          try {
+            const batch = db.batch();
+            let hasError = false;
+
+            for (let i = 0; i < courseUsers.length; i++) {
+              const select = document.getElementById(`courseSelect_${i}`);
+              const course = select ? select.value : '';
+              if (!course) {
+                showAlert && showAlert(`Please select a course for ${courseUsers[i].name}`, 'danger');
+                hasError = true;
+                break;
+              }
+              const userRef = db.collection('users').doc(courseUsers[i].id);
+              batch.update(userRef, { course: course });
+            }
+
+            if (hasError) {
+              btn.disabled = false;
+              btn.innerText = '💾 Save All Course Assignments';
+              return;
+            }
+
+            await batch.commit();
+
+            if (result) {
+              result.innerHTML = `
+                <div class="alert alert-info" style="background: rgba(34,197,94,0.1); border-left-color: #22c55e;">
+                  <span>✅</span>
+                  <div><strong>Success!</strong> All courses have been assigned. Coordinators can now see only their students.</div>
+                </div>
+              `;
+            }
+            
+            showAlert && showAlert('✅ All courses assigned successfully!', 'success');
+            btn.innerText = '✅ Saved Successfully';
+            typeof loadAdminUsers === 'function' && loadAdminUsers();
+
+            setTimeout(() => {
+              btn.disabled = false;
+              btn.innerText = '💾 Save All Course Assignments';
+              if (result) result.innerHTML = '';
+            }, 5000);
+
+          } catch (err) {
+            if (result) result.innerHTML = `<p style="color:#ef4444;">❌ Error: ${err.message}</p>`;
+            showAlert && showAlert('Error saving courses: ' + err.message, 'danger');
+            btn.disabled = false;
+            btn.innerText = '💾 Save All Course Assignments';
+          }
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>
