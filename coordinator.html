@@ -165,11 +165,11 @@
         // Check if course is missing
         if (!course) {
           alert("⚠️ Your account has no course assigned!\n\nPlease contact admin to assign your course in the 'Fix Courses' tab.");
-          document.getElementById("userDisplay").innerText = `${name} (${role}) - NO COURSE`;
+          document.getElementById("userDisplay").innerText = `${name} - NO COURSE`;
           const courseDisplay = document.getElementById("coordinatorCourse");
           if (courseDisplay) courseDisplay.innerText = "NOT ASSIGNED";
         } else {
-          document.getElementById("userDisplay").innerText = `${name} (${role})`;
+          document.getElementById("userDisplay").innerText = name;
           const courseDisplay = document.getElementById("coordinatorCourse");
           if (courseDisplay) courseDisplay.innerText = course;
         }
