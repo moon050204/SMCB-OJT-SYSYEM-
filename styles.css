@@ -172,6 +172,43 @@ body {
 }
 
 /* ==========================================
+   PASSWORD TOGGLE
+========================================== */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem; /* room for the eye button */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.toggle-password:hover {
+  color: var(--text-light);
+}
+
+.toggle-password svg {
+  width: 18px;
+  height: 18px;
+  pointer-events: none; /* prevents SVG from stealing the click */
+}
+
+/* ==========================================
    BUTTONS
 ========================================== */
 .btn {
