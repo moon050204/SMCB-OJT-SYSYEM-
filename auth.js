@@ -25,6 +25,25 @@ document.addEventListener("DOMContentLoaded", () => {
   if (registerForm) registerForm.addEventListener("submit", handleRegister);
   if (loginForm) loginForm.addEventListener("submit", handleLogin);
   if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
+
+  // Password toggle (eye icon)
+  document.querySelectorAll(".toggle-password").forEach(button => {
+    button.addEventListener("click", () => {
+      const input = document.getElementById(button.getAttribute("data-target"));
+      const eyeIcon = button.querySelector(".eye-icon");
+      const eyeOffIcon = button.querySelector(".eye-off-icon");
+
+      if (input.type === "password") {
+        input.type = "text";
+        eyeIcon.style.display = "none";
+        eyeOffIcon.style.display = "block";
+      } else {
+        input.type = "password";
+        eyeIcon.style.display = "block";
+        eyeOffIcon.style.display = "none";
+      }
+    });
+  });
 });
 
 async function handleRegister(e) {
