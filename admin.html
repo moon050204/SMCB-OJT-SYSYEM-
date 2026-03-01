@@ -31,7 +31,6 @@
         <button class="tab-btn" data-tab="admin-users">Users</button>
         <button class="tab-btn" data-tab="admin-courses">Fix Courses</button>
         <button class="tab-btn" data-tab="admin-emergency">🚨 Emergency</button>
-        <!--<button class="tab-btn" data-tab="admin-reports">Reports</button> -->
       </div>
 
       <!-- Overview -->
@@ -64,15 +63,6 @@
               <div class="stat-icon orange">👔</div>
             </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <div>
-                <div class="stat-value" id="adminTotalDocs">0</div>
-                <div class="stat-label">Total Documents</div>
-              </div>
-              <div class="stat-icon purple">📁</div>
-            </div>
-          </div>
         </div>
 
         <div class="alert alert-info">
@@ -81,7 +71,7 @@
         </div>
       </div>
 
-      <!-- Create User Tab (NEW) -->
+      <!-- Create User Tab -->
       <div class="tab-content" id="admin-create-user">
         <div class="card">
           <div class="card-header">
@@ -189,7 +179,7 @@
         </div>
       </div>
 
-      <!-- Emergency Fix Tab (NEW) -->
+      <!-- Emergency Fix Tab -->
       <div class="tab-content" id="admin-emergency">
         <div class="card">
           <div class="card-header">
@@ -235,19 +225,6 @@
         </div>
       </div>
 
-      <!-- Reports -->
-     <!-- <div class="tab-content" id="admin-reports">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">System Reports</h3>
-          </div>
-          <div id="adminReports">
-            <p style="color: #6b7280; text-align: center; padding: 2rem;">
-              Reports and analytics coming soon...
-            </p>
-          </div>
-        </div>
-      </div> -->
     </div>
     <!-- END ADMIN DASHBOARD -->
   </div>
@@ -265,14 +242,12 @@
   <!-- Admin page guard -->
   <script>
     (function(){
-      // DEBUG: confirm which Firebase project the page is using and token claims
       try {
         console.log('Firebase app config:', firebase.app().options);
       } catch(e) {
         console.warn('Firebase not initialized yet:', e);
       }
 
-      // Helper: prints current user's token claims (call after sign-in)
       async function logTokenClaims(user) {
         if (!user) return console.log('No signed-in user to inspect claims.');
         try {
@@ -283,23 +258,19 @@
         }
       }
 
-      // Reuse global instances if already created by other files to avoid "Identifier already been declared"
       const auth = (window.appAuth = window.appAuth || firebase.auth());
       const db = (window.appDB = window.appDB || firebase.firestore());
       let courseUsers = [];
 
-      // Helper: show actionable message for permission errors
       function handleFirestoreError(err, where) {
-        // log context
         console.error(where + ' - Firestore error:', err);
         try { console.log('Firebase config:', firebase.app().options); } catch(e){/*ignore*/ }
         try { console.log('Current uid:', auth.currentUser && auth.currentUser.uid); } catch(e){/*ignore*/ }
         const isPerm = err && (err.code === 'permission-denied' || /Missing or insufficient permissions/i.test(err.message || ''));
         const msgRoot = isPerm
-          ? 'Missing or insufficient Firestore permissions. This page requires admin privileges to list/write other users or read collectionGroup uploads.'
+          ? 'Missing or insufficient Firestore permissions. This page requires admin privileges to list/write other users.'
           : 'Firestore error: ' + (err.message || err);
 
-        // Prefer showAlert if available; otherwise fallback to alert and inline UI hints.
         const extra = isPerm
           ? '\n\nAction: (1) verify you are using the same Firebase project shown above, (2) set custom claims (admin/role) via the Admin SDK OR relax rules for testing, then refresh token.'
           : '';
@@ -309,14 +280,12 @@
           alert(msgRoot + extra);
         }
 
-        // Optionally show a visible message in the page for admin context
         const courseResult = document.getElementById('courseResult');
         if (courseResult && isPerm) {
           courseResult.innerHTML = '<p style="color:#ef4444;">' + msgRoot + ' — grant admin claims or update rules. See console for details.</p>';
         }
       }
 
-      // small helper available from console: window.debugFirestore()
       window.debugFirestore = async function() {
         console.log('firebase options:', firebase.app().options);
         const user = auth.currentUser;
@@ -330,31 +299,24 @@
       };
 
       auth.onAuthStateChanged && auth.onAuthStateChanged(async (user) => {
-        // when auth fires, print token claims (helps verify admin claim)
         logTokenClaims(user);
         if (!user) {
           window.location.href = 'index.html';
           return;
         }
         
-        // Prefer token claims (set via Admin SDK). If missing, fall back to reading users/{uid} with guarded try/catch.
         let role;
         let name = 'Admin';
         try {
-          // use the user object provided by the listener to avoid race with auth.currentUser
           const idTokenResult = await user.getIdTokenResult();
           const claims = idTokenResult.claims || {};
-          // Expect either claims.role (string) or a boolean flag claims.admin
           if (claims.role) role = claims.role;
           else if (claims.admin) role = 'admin';
-
-          // If name is available in token claims, use it
           if (claims.name) name = claims.name;
         } catch (err) {
           console.warn('Token read error (non-fatal):', err);
         }
 
-        // If no role from token claims, try to read user's profile doc (may fail if rules block it)
         if (!role) {
           try {
             const doc = await db.collection('users').doc(user.uid).get();
@@ -367,9 +329,7 @@
             role = data.role;
             name = data.name || name;
           } catch (err) {
-            // Likely permission error from Firestore rules reading users/{uid}
             console.error('Firestore read error while determining role:', err);
-            // Show guidance and sign out to avoid partial access
             alert('Insufficient Firestore permissions to read your user profile. Update your security rules to allow users to read their own profile or set role claims. See console for details.');
             await auth.signOut();
             window.location.href = 'index.html';
@@ -385,12 +345,10 @@
 
         document.getElementById('userDisplay').innerText = name;
 
-        // quick permission probe: try a small admin read (limit 1) to ensure collection-level access
         try {
           await db.collection('users').limit(1).get();
         } catch (err) {
           handleFirestoreError(err, 'Permission probe (users collection)');
-          // do not continue to call admin-only setup functions if we cannot list users
           return;
         }
 
@@ -417,13 +375,9 @@
           const students = usersSnap.docs.filter(u => u.data().role === 'student').length;
           const coordinators = usersSnap.docs.filter(u => u.data().role === 'coordinator').length;
 
-          const docsSnap = await db.collectionGroup('uploads').get();
-          const totalDocs = docsSnap.size;
-
           document.getElementById('adminTotalUsers').innerText = totalUsers;
           document.getElementById('adminStudents').innerText = students;
           document.getElementById('adminCoordinators').innerText = coordinators;
-          document.getElementById('adminTotalDocs').innerText = totalDocs;
         } catch (err) {
           handleFirestoreError(err, 'loadAdminOverview');
         }
@@ -461,7 +415,6 @@
         }
       }
 
-       // NEW: Create User Function
        function setupCreateUser() {
          const form = document.getElementById('adminCreateUserForm');
          if (!form) return;
@@ -521,10 +474,6 @@
                return;
              }
  
-            // Creating auth users from client signs you in as the new user.
-            // Writing their profile document requires admin-level Firestore permissions.
-            // We'll attempt creation, but if the Firestore write fails due to permissions,
-            // we will clean up the created auth user and instruct the admin to use the Admin SDK.
             const cred = await auth.createUserWithEmailAndPassword(email, password);
             const newUser = firebase.auth().currentUser;
  
@@ -542,7 +491,6 @@
             try {
               await db.collection('users').doc(cred.user.uid).set(userData);
             } catch (err) {
-              // Firestore write failed: attempt to delete the newly created auth account to avoid orphan accounts
               handleFirestoreError(err, 'createUser -> firestore write');
               try {
                 if (newUser && newUser.delete) {
@@ -585,7 +533,6 @@
          });
        }
  
-      // NEW: Emergency Fix Function
       function setupEmergencyFix() {
         document.getElementById('checkDbBtn').addEventListener('click', async () => {
           const result = document.getElementById('emergencyCheckResult');
@@ -645,7 +592,6 @@
         });
       }
 
-      // Course assignment (existing)
       async function setupCourseAssignment() {
         const container = document.getElementById('courseAssignmentList');
         const saveBtn = document.getElementById('saveCoursesBtn');
@@ -706,7 +652,6 @@
         }
       }
 
-      // Save course assignments (existing)
       const saveCoursesBtnEl = document.getElementById('saveCoursesBtn');
       if (saveCoursesBtnEl) {
         saveCoursesBtnEl.addEventListener('click', async () => {
