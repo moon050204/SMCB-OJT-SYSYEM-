@@ -4,30 +4,17 @@
     try {
       const usersSnap = await db.collection('users').get();
       const totalUsers = usersSnap.size;
-
       let students = 0;
       let coordinators = 0;
-      const studentIds = [];
 
       usersSnap.forEach(doc => {
         const data = doc.data();
         if (data.role === 'student') {
           students++;
-          studentIds.push(doc.id);
         } else if (data.role === 'coordinator') {
           coordinators++;
         }
       });
-
-      let totalDocs = 0;
-      for (const uid of studentIds) {
-        const docsSnap = await db
-          .collection('documents')
-          .doc(uid)
-          .collection('uploads')
-          .get();
-        totalDocs += docsSnap.size;
-      }
 
       const elTotal = document.getElementById('adminTotalUsers');
       if (elTotal) elTotal.innerText = totalUsers;
@@ -35,8 +22,6 @@
       if (elStudents) elStudents.innerText = students;
       const elCoord = document.getElementById('adminCoordinators');
       if (elCoord) elCoord.innerText = coordinators;
-      const elDocs = document.getElementById('adminTotalDocs');
-      if (elDocs) elDocs.innerText = totalDocs;
     } catch (err) {
       console.error('loadAdminOverview error:', err);
     }
